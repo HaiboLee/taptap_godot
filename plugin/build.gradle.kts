@@ -7,14 +7,14 @@ plugins {
 }
 
 // TODO: Update value to your plugin's name.
-val pluginName = "GodotAndroidPluginTemplate"
+val pluginName = "TapTap"
 
 // TODO: Update value to match your plugin's package name.
 val pluginPackageName = "org.godotengine.plugin.android.template"
 
 android {
     namespace = pluginPackageName
-    compileSdk = 36
+    compileSdk = 34
 
     buildFeatures {
         buildConfig = true
@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation("org.godotengine:godot:4.5.1.stable")
+    implementation("org.godotengine:godot:4.4.1.stable")
 }
 
 // BUILD TASKS DEFINITION

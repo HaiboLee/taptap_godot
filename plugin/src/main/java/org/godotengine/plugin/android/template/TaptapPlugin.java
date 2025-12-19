@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.godotengine.godot.Godot;
 import org.godotengine.godot.plugin.GodotPlugin;
+import org.godotengine.godot.plugin.UsedByGodot;
 
 public class TaptapPlugin extends GodotPlugin {
     /**
@@ -21,6 +22,7 @@ public class TaptapPlugin extends GodotPlugin {
         return "TapTap";
     }
 
+    @UsedByGodot
     public String helloWorld(){
         Log.d("taptap","hello from taptap plugin");
         return "Hello Taptap Godot";

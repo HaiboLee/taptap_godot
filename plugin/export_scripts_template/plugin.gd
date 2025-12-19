@@ -1,0 +1,41 @@
+@tool
+extends EditorPlugin
+
+var export_plugin : AndroidExportPlugin
+
+func _enter_tree():
+	export_plugin = AndroidExportPlugin.new()
+	add_export_plugin(export_plugin)
+	print("添加包")
+	
+func _exit_tree():
+	# Clean-up of the plugin goes here.
+	remove_export_plugin(export_plugin)
+	export_plugin = null	
+	print("移除包")
+
+	
+class AndroidExportPlugin extends EditorExportPlugin:
+	# TODO: Update to your plugin's name.
+	var _plugin_name = "TapTap"
+
+	func _supports_platform(platform):
+		if platform is EditorExportPlatformAndroid:
+			return true
+		return false
+
+	func _get_android_libraries(platform, debug):
+		if debug:
+			return PackedStringArray(["taptap/lib/TapTap-debug.aar"])
+		else:
+			return PackedStringArray(["taptap/lib/TapTap-release.aar"])
+
+	func _get_android_dependencies(platform, debug):
+		# TODO: Add remote dependices here.
+		if debug:
+			return PackedStringArray([])
+		else:
+			return PackedStringArray([])
+
+	func _get_name():
+		return _plugin_name	
