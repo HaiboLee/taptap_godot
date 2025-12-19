@@ -6,12 +6,14 @@ var export_plugin : AndroidExportPlugin
 func _enter_tree():
 	export_plugin = AndroidExportPlugin.new()
 	add_export_plugin(export_plugin)
+	add_autoload_singleton("TapTapPlugin","res://addons/taptap/TapTapGodot.cs")
 	print("添加包")
 	
 func _exit_tree():
 	# Clean-up of the plugin goes here.
 	remove_export_plugin(export_plugin)
 	export_plugin = null	
+	remove_autoload_singleton("TapTapPlugin")
 	print("移除包")
 
 	

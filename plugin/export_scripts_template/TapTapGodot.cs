@@ -3,40 +3,35 @@ using System;
 
 public partial class TapTapGodot : Node
 {
+    private GodotObject _tapTap;
+    
     public override void _Ready()
     {
         base._Ready();
-        GD.Print("TapTap 插件初始化");
         if (Engine.HasSingleton("TapTap"))
         {
-            GD.Print("---准备打印---");
-            var plugin = Engine.GetSingleton("TapTap");
-            var result = plugin.Call("helloWorld");
-            GD.Print("登录返回:",result);
+            GD.Print("TapTap 插件初始化");
+            _tapTap = Engine.GetSingleton("TapTap");
+            _tapTap.Call("TapTapInit", "b0hnecor7odhsozvfe", "YVnPjPYe5v6awpnkeSXtNdiOh5UJdzuLmjt1NKJY");
+            _tapTap.Connect("login_success", Callable.From((string name) =>
+            {
+                GD.Print("login_success ", name);
+            }));
+
+            _tapTap.Connect("login_fail", Callable.From((string name) =>
+            {
+                GD.Print("login_fail ", name);
+            }));
         }
         else
         {
             GD.Print("TapTap 插件未加载");
-            DebugAvailableSingletons();
-
         }
     }
 
-    private void DebugAvailableSingletons()
+    public void TapTapLogin()
     {
-        GD.Print("📋 可用的引擎单例:");
-        try
-        {
-            var singletons = Engine.GetSingletonList();
-            foreach (var singleton in singletons)
-            {
-                GD.Print($"  - {singleton}");
-            }
-        }
-        catch (Exception ex)
-        {
-            GD.Print($"获取单例列表失败: {ex.Message}");
-        }
+        _tapTap.Call("TapTapLogin");
     }
 
 }

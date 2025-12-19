@@ -42,6 +42,8 @@ android {
 
 dependencies {
     implementation("org.godotengine:godot:4.4.1.stable")
+    implementation("com.taptap.sdk:tap-core:4.9.2")
+    implementation("com.taptap.sdk:tap-login:4.9.2")
 }
 
 // BUILD TASKS DEFINITION
