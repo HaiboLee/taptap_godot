@@ -1,7 +1,5 @@
 package org.godotengine.plugin.android.template;
 
-import static com.taptap.sdk.kit.internal.TapTapKit.context;
-
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -43,23 +41,57 @@ public class TaptapPlugin extends GodotPlugin {
     }
 
     @UsedByGodot
-    public void TapTapInit(String clientId, String clientToken) {
-        TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-                clientId, // 游戏 Client ID
-                clientToken, // 游戏 Client Token
-                TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-        );
-        tapSdkOptions.setEnableLog(BuildConfig.DEBUG);
-        // 初始化 TapSDK
-        TapTapSdk.init(context, tapSdkOptions);
+    public String helloTapTap() {
+        Log.i("taptap", "hello d");
+        return "Hello TapTap";
+    }
+
+
+    @UsedByGodot
+    public void tapTapInit(String clientId, String clientToken) {
+
+        Log.i("taptap", "taptap init begin");
+        var activity = getGodot().getActivity();
+
+        if (activity == null) {
+            Log.e("taptap", "activity is null");
+            return;
+        }
+        Log.i("taptap", "taptap init -" + clientId + "-" + clientToken);
+
+        try {
+            TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+                    clientId, // 游戏 Client ID
+                    clientToken, // 游戏 Client Token
+                    TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+            );
+            Log.i("taptap", "taptap init -2");
+            // 初始化 TapSDK
+
+            var context = activity.getApplicationContext();
+            if (context == null) {
+                Log.e("taptap", "context is null");
+                return;
+            }
+            Log.i("taptap", "taptap init -3");
+
+            TapTapSdk.init(context, tapSdkOptions);
+            Log.i("taptap", "taptap init end");
+        } catch (Exception e) {
+            Log.e("taptap", e.getMessage());
+        }
+
     }
 
     @UsedByGodot
-    public void TapTapLogin() {
-        String[] scopes = new String[]{Scopes.SCOPE_PUBLIC_PROFILE};
+    public void tapTapLogin() {
 
+        Log.i("taptap", "taptap login begin");
+
+        String[] scopes = new String[]{Scopes.SCOPE_PUBLIC_PROFILE};
         var activity = getGodot().getActivity();
         if (activity == null) {
+            Log.e("taptap", "login taptap activity is null");
             return;
         }
 
@@ -83,6 +115,8 @@ public class TaptapPlugin extends GodotPlugin {
                 emitSignal("login_fail", "取消登陆");
             }
         });
+
+        Log.i("taptap", "taptap login end");
 
     }
 }
