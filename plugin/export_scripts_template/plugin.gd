@@ -27,17 +27,19 @@ class AndroidExportPlugin extends EditorExportPlugin:
 		return false
 
 	func _get_android_libraries(platform, debug):
+		var libs = []
 		if debug:
-			return PackedStringArray(["taptap/lib/TapTap-debug.aar"])
+			libs.append("taptap/lib/TapTap-debug.aar")
 		else:
-			return PackedStringArray(["taptap/lib/TapTap-release.aar"])
+			libs.append("taptap/lib/TapTap-release.aar")
+		return PackedStringArray(libs)
+			
+			
 
 	func _get_android_dependencies(platform, debug):
 		# TODO: Add remote dependices here.
-		if debug:
-			return PackedStringArray([])
-		else:
-			return PackedStringArray([])
+		var array = ["com.taptap.sdk:tap-core:4.9.2","com.taptap.sdk:tap-login:4.9.2"]
+		return PackedStringArray(array)
 
 	func _get_name():
 		return _plugin_name	

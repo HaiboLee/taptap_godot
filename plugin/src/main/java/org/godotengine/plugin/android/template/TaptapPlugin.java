@@ -40,46 +40,47 @@ public class TaptapPlugin extends GodotPlugin {
         return signals;
     }
 
-    @UsedByGodot
-    public String helloTapTap() {
-        Log.i("taptap", "hello d");
-        return "Hello TapTap";
-    }
-
 
     @UsedByGodot
     public void tapTapInit(String clientId, String clientToken) {
 
-        Log.i("taptap", "taptap init begin");
-        var activity = getGodot().getActivity();
+        getGodot().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("taptap", "taptap init begin");
+                var activity = getGodot().getActivity();
 
-        if (activity == null) {
-            Log.e("taptap", "activity is null");
-            return;
-        }
-        Log.i("taptap", "taptap init -" + clientId + "-" + clientToken);
+                if (activity == null) {
+                    Log.e("taptap", "activity is null");
+                    return;
+                }
 
-        try {
-            TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
-                    clientId, // 游戏 Client ID
-                    clientToken, // 游戏 Client Token
-                    TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
-            );
-            Log.i("taptap", "taptap init -2");
-            // 初始化 TapSDK
+                try {
+                    Log.i("taptap", "taptap init -1");
+                    TapTapSdkOptions tapSdkOptions = new TapTapSdkOptions(
+                            clientId, // 游戏 Client ID
+                            clientToken, // 游戏 Client Token
+                            TapTapRegion.CN // 游戏可玩区域: [TapTapRegion.CN]=国内 [TapTapRegion.GLOBAL]=海外
+                    );
+                    Log.i("taptap", "taptap init -2");
+                    tapSdkOptions.setEnableLog(true);
+                    // 初始化 TapSDK
 
-            var context = activity.getApplicationContext();
-            if (context == null) {
-                Log.e("taptap", "context is null");
-                return;
+                    var context = activity.getApplicationContext();
+                    if (context == null) {
+                        Log.e("taptap", "context is null");
+                        return;
+                    }
+                    Log.i("taptap", "taptap init -3");
+
+                    TapTapSdk.init(context, tapSdkOptions);
+                    Log.i("taptap", "taptap init end");
+                } catch (Exception e) {
+                    Log.e("taptap", e.getMessage());
+                }
+
             }
-            Log.i("taptap", "taptap init -3");
-
-            TapTapSdk.init(context, tapSdkOptions);
-            Log.i("taptap", "taptap init end");
-        } catch (Exception e) {
-            Log.e("taptap", e.getMessage());
-        }
+        });
 
     }
 
