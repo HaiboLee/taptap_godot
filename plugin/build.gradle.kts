@@ -44,6 +44,9 @@ dependencies {
     implementation("org.godotengine:godot:4.4.1.stable")
     implementation("com.taptap.sdk:tap-core:4.9.2")
     implementation("com.taptap.sdk:tap-login:4.9.2")
+    implementation("com.taptap.sdk:tap-leaderboard-androidx:4.9.2") //排行榜
+    implementation("com.taptap.sdk:tap-compliance:4.9.2") //合规认证
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1") //合规认证
 }
 
 // BUILD TASKS DEFINITION

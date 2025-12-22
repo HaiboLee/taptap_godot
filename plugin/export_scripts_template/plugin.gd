@@ -7,14 +7,12 @@ func _enter_tree():
 	export_plugin = AndroidExportPlugin.new()
 	add_export_plugin(export_plugin)
 	add_autoload_singleton("TapTapPlugin","res://addons/taptap/TapTapGodot.cs")
-	print("添加包")
 	
 func _exit_tree():
 	# Clean-up of the plugin goes here.
 	remove_export_plugin(export_plugin)
 	export_plugin = null	
 	remove_autoload_singleton("TapTapPlugin")
-	print("移除包")
 
 	
 class AndroidExportPlugin extends EditorExportPlugin:
@@ -38,7 +36,11 @@ class AndroidExportPlugin extends EditorExportPlugin:
 
 	func _get_android_dependencies(platform, debug):
 		# TODO: Add remote dependices here.
-		var array = ["com.taptap.sdk:tap-core:4.9.2","com.taptap.sdk:tap-login:4.9.2"]
+		var array = ["com.taptap.sdk:tap-core:4.9.2",
+		"com.taptap.sdk:tap-login:4.9.2",
+		"com.taptap.sdk:tap-leaderboard-androidx:4.9.2",
+		"org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1",
+		"com.taptap.sdk:tap-compliance:4.9.2"]
 		return PackedStringArray(array)
 
 	func _get_name():
