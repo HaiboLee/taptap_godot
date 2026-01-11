@@ -8,6 +8,7 @@ plugins {
 
 // TODO: Update value to your plugin's name.
 val pluginName = "TapTap"
+val taptapVersion = ":4.9.3"
 
 // TODO: Update value to match your plugin's package name.
 val pluginPackageName = "org.godotengine.plugin.android.template"
@@ -42,11 +43,14 @@ android {
 
 dependencies {
     implementation("org.godotengine:godot:4.4.1.stable")
-    implementation("com.taptap.sdk:tap-core:4.9.2")
-    implementation("com.taptap.sdk:tap-login:4.9.2")
-    implementation("com.taptap.sdk:tap-leaderboard-androidx:4.9.2") //排行榜
-    implementation("com.taptap.sdk:tap-compliance:4.9.2") //合规认证
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1") //合规认证
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1") //合规认证json 序列化
+    implementation("com.taptap.sdk:tap-core" + taptapVersion)
+    implementation("com.taptap.sdk:tap-login" + taptapVersion)
+    implementation("com.taptap.sdk:tap-leaderboard-androidx" + taptapVersion) //排行榜
+    implementation("com.taptap.sdk:tap-compliance" + taptapVersion) //合规认证
+    implementation("com.taptap.sdk:tap-cloudsave" + taptapVersion)
+
+
 }
 
 // BUILD TASKS DEFINITION

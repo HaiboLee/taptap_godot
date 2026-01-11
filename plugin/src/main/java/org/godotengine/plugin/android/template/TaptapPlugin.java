@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.taptap.sdk.cloudsave.TapTapCloudSave;
+import com.taptap.sdk.cloudsave.internal.TapCloudSaveCallback;
 import com.taptap.sdk.compliance.TapTapCompliance;
 import com.taptap.sdk.compliance.TapTapComplianceCallback;
 import com.taptap.sdk.compliance.constants.ComplianceMessage;
@@ -41,8 +43,18 @@ import java.util.Set;
 
 public class TaptapPlugin extends GodotPlugin {
 
+    GodotTapTapCloudSave godotTapTapCloudSave;
+    GodotTapTapLogin godotTapTapLogin;
+    GodotTapTapCompliance godotTapTapCompliance;
+
+    GodotTapTapLeaderboard godotTapTapLeaderboard;
+
     public TaptapPlugin(Godot godot) {
         super(godot);
+        godotTapTapCloudSave = new GodotTapTapCloudSave(this);
+        godotTapTapLogin = new GodotTapTapLogin(this);
+        godotTapTapCompliance = new GodotTapTapCompliance(this);
+        godotTapTapLeaderboard = new GodotTapTapLeaderboard(this);
     }
 
     @Override
@@ -56,7 +68,78 @@ public class TaptapPlugin extends GodotPlugin {
         signals.add(new SignalInfo("login_success", Boolean.class, String.class, String.class));
         signals.add(new SignalInfo("taptap_compliance", Boolean.class));
         signals.add(new SignalInfo("leaderboard_scores", String.class)); //排行榜分数
+        signals.add(new SignalInfo("cloud_save", Integer.class, Boolean.class, String.class));
         return signals;
+    }
+
+
+    @UsedByGodot
+    public void tapTapCreateCloudSave(String filePath, String name, String des) { //创建云存档
+        godotTapTapCloudSave.CreateCloudSave(filePath, name, des);
+    }
+
+    @UsedByGodot
+    public void taptapGetCloudList() {
+        godotTapTapCloudSave.GetCloudSaveList();
+    }
+
+    @UsedByGodot
+    public void downloadCloudSave(String uuid, String fileId) {
+        godotTapTapCloudSave.DownloadCloudSave(uuid, fileId);
+    }
+
+    @UsedByGodot
+    public void updateCloudSave(String uuid, String path, String name) {
+        godotTapTapCloudSave.UpdateCloudSave(uuid, path, name);
+    }
+
+    @UsedByGodot
+    public void deleteCloudSave(String uuid) {
+        godotTapTapCloudSave.DeleteCloudSave(uuid);
+    }
+
+
+    @UsedByGodot
+    public void tapTapLogin() {
+        godotTapTapLogin.TapTapLogin();
+    }
+
+
+    //合规认证
+    @UsedByGodot
+    public void tapTapCompliance() {
+        godotTapTapCompliance.tapTapCompliance();
+    }
+
+    //退出认证
+    @UsedByGodot
+    public void exitCompliance() {
+        TapTapCompliance.exit();
+    }
+
+    @UsedByGodot
+    public void logout() {
+        TapTapLogin.logout();
+    }
+
+
+    //打开排行榜页面
+    @UsedByGodot
+    public void openLeaderboardPage(String id, String lbType) {
+        godotTapTapLeaderboard.OpenLeaderboardPage(id, lbType);
+    }
+
+    //提交排行榜分数
+    @UsedByGodot
+    public void submitScore(String id, long score) {
+        godotTapTapLeaderboard.SubmitScore(id, score);
+    }
+
+    //获取排行榜分数
+    @UsedByGodot
+    public void GetLeaderboardScores(String id) {
+
+        godotTapTapLeaderboard.GetLeaderboardScores(id);
     }
 
 
@@ -85,8 +168,6 @@ public class TaptapPlugin extends GodotPlugin {
                 true // 游戏是否需要获取真实年龄段信息
         );
 
-        //complianceListen();
-
         var context = activity.getApplicationContext();
         if (context == null) {
             Log.e("taptap", "context is null");
@@ -96,186 +177,14 @@ public class TaptapPlugin extends GodotPlugin {
 
     }
 
-    @UsedByGodot
-    public void tapTapLogin() {
 
-        String[] scopes = new String[]{Scopes.SCOPE_PUBLIC_PROFILE};
-        var activity = getGodot().getActivity();
-        if (activity == null) {
-            Log.e("taptap", "login taptap activity is null");
-            return;
-        }
-
-        TapTapLogin.loginWithScopes(activity, scopes, new TapTapCallback<TapTapAccount>() {
-            @Override
-            public void onSuccess(TapTapAccount tapTapAccount) {
-                // 登录成功
-                emitSignal("login_success", true, tapTapAccount.getName(), tapTapAccount.getOpenId());
-            }
-
-            @Override
-            public void onFail(@NonNull TapTapException exception) {
-                // 登录失败
-                emitSignal("login_success", false, exception.toString(), "");
-            }
-
-            @Override
-            public void onCancel() {
-                // 登录取消
-                emitSignal("login_success", false, "取消登录", "");
-            }
-        });
+    //获取 godot 对象
+    protected Godot GetGodot() {
+        return getGodot();
     }
 
-
-    //合规认证
-    @UsedByGodot
-    public void tapTapCompliance() {
-
-
-        TapTapAccount currentTapAccount = TapTapLogin.getCurrentTapAccount();
-        if (currentTapAccount != null) {
-            complianceListen();
-            String unionId = currentTapAccount.getUnionId();
-            TapTapCompliance.startup(Objects.requireNonNull(getGodot().getActivity()), unionId);
-        } else {
-            Log.i("taptap", "合规认证账户为空");
-            tapTapLogin();
-        }
-
-    }
-
-    //退出认证
-    @UsedByGodot
-    public void exitCompliance() {
-        TapTapCompliance.exit();
-    }
-
-    @UsedByGodot
-    public void logout() {
-        TapTapLogin.logout();
-    }
-
-
-    //打开排行榜页面
-    @UsedByGodot
-    public void openLeaderboardPage(String id, String lbType) {
-        TapTapAccount currentTapAccount = TapTapLogin.getCurrentTapAccount();
-        if (currentTapAccount == null) {
-            tapTapLogin();
-        }
-        TapTapLeaderboard.openLeaderboard(
-                Objects.requireNonNull(getGodot().getActivity()),
-                id,
-                lbType
-        );
-    }
-
-    //提交排行榜分数
-    @UsedByGodot
-    public void submitScore(String id, long score) {
-
-        TapTapAccount currentTapAccount = TapTapLogin.getCurrentTapAccount();
-        if (currentTapAccount == null) {
-            tapTapLogin();
-        }
-
-        List<SubmitScoresRequest.ScoreItem> scores = Arrays.asList(
-                new SubmitScoresRequest.ScoreItem(id, score)
-        );
-
-        TapTapLeaderboard.submitScores(
-                scores,
-                new TapTapLeaderboardResponseCallback<SubmitScoresResponse>() {
-                    @Override
-                    public void onSuccess(SubmitScoresResponse data) {
-                        // 提交成功
-                        Log.i("Leaderboard", "提交成功: " + data);
-                    }
-
-                    @Override
-                    public void onFailure(int code, String message) {
-                        // 提交失败
-                        Log.e("Leaderboard", "提交失败: code=" + code + ", message=" + message);
-                    }
-                }
-        );
-    }
-
-    //获取排行榜分数
-    @UsedByGodot
-    public void GetLeaderboardScores(String id) {
-
-        TapTapAccount currentTapAccount = TapTapLogin.getCurrentTapAccount();
-        if (currentTapAccount == null) {
-            tapTapLogin();
-        }
-
-
-        TapTapLeaderboard.loadLeaderboardScores(
-                id, // 排行榜ID
-                LeaderboardCollection.PUBLIC, // 总榜
-                null, // nextPage - 首次请求传null
-                null, // periodToken - 时间周期标识
-                new TapTapLeaderboardResponseCallback<LeaderboardScoresResponse>() {
-                    @Override
-                    public void onSuccess(LeaderboardScoresResponse data) {
-                        // 获取成功
-                        List<Score> scores = data.getScores();
-
-                        if (scores.isEmpty()) {
-                            return;
-                        }
-                        JSONArray arr = new JSONArray();
-                        for (Score s : scores) {
-                            JSONObject obj = new JSONObject();
-                            try {
-                                obj.put("rank", s.getRank());
-                                obj.put("score", s.getScore());
-                                if (s.getUser() != null) {
-                                    obj.put("userName", s.getUser().getName());
-                                    assert s.getUser().getAvatar() != null;
-                                    obj.put("userId", s.getUser().getAvatar().getUrl());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            arr.put(obj);
-                        }
-                        emitSignal("leaderboard_scores", arr.toString());
-                    }
-
-                    @Override
-                    public void onFailure(int code, String message) {
-                        // 获取失败
-                        Log.e("Leaderboard", "获取排行榜数据失败: code=" + code + ", message=" + message);
-                    }
-                }
-        );
-    }
-
-
-    //注册排行榜回调函数
-    private void registerLeaderboard() {
-        // 注册排行榜事件回调
-        TapTapLeaderboardCallback callback = new TapTapLeaderboardCallback() {
-            @Override
-            public void onLeaderboardResult(int code, String message) {
-                // 处理排行榜事件
-                switch (code) {
-                    case 500102:
-                        // 用户未登录，需要引导用户登录
-                        // showLoginDialog();
-                        break;
-                    // 处理其他事件
-                    default:
-                        Log.d("Leaderboard", "code: " + code + ", message: " + message);
-                        break;
-                }
-            }
-        };
-        TapTapLeaderboard.registerLeaderboardCallback(callback);
-        TapTapLeaderboard.unregisterLeaderboardCallback(callback);
+    protected void ComplianceListen() {
+        complianceListen();
     }
 
 
@@ -291,21 +200,19 @@ public class TaptapPlugin extends GodotPlugin {
                 case ComplianceMessage.LOGIN_SUCCESS:
                     // do something
                     Log.i("taptap", "合规认证成功");
-                    emitSignal("taptap_compliance", true);
+                    TapTapEmitSignal("taptap_compliance", true);
                     break;
-//                        case ComplianceMessage.EXITED:
-//                        case ComplianceMessage.SWITCH_ACCOUNT:
-//                        case ComplianceMessage.PERIOD_RESTRICT:
-//                        case ComplianceMessage.DURATION_LIMIT:
-//                        case ComplianceMessage.INVALID_CLIENT_OR_NETWORK_ERROR:
                 default:
                     Log.i("taptap", "合规认证失败:" + code);
-                    emitSignal("taptap_compliance", false);
+                    TapTapEmitSignal("taptap_compliance", false);
                     break;
             }
         });
 
+    }
 
+    public void TapTapEmitSignal(String signalName, final Object... signalArgs) {
+        emitSignal(signalName, signalArgs);
     }
 
 }
