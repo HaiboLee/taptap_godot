@@ -22,6 +22,9 @@ import java.util.Objects;
 //TapTap 排行榜
 public class GodotTapTapLeaderboard {
 
+    static final int Page = 1;
+    static final int Nearby = 2;
+
     TaptapPlugin taptap;
 
     public GodotTapTapLeaderboard(TaptapPlugin _taptap) {
@@ -82,32 +85,16 @@ public class GodotTapTapLeaderboard {
                 LeaderboardCollection.PUBLIC, // 总榜
                 null, // nextPage - 首次请求传null
                 null, // periodToken - 时间周期标识
-                new TapTapLeaderboardResponseCallback<LeaderboardScoresResponse>() {
+                new TapTapLeaderboardResponseCallback<>() {
                     @Override
                     public void onSuccess(LeaderboardScoresResponse data) {
                         // 获取成功
                         List<Score> scores = data.getScores();
-
                         if (scores.isEmpty()) {
                             return;
                         }
-                        JSONArray arr = new JSONArray();
-                        for (Score s : scores) {
-                            JSONObject obj = new JSONObject();
-                            try {
-                                obj.put("rank", s.getRank());
-                                obj.put("score", s.getScore());
-                                if (s.getUser() != null) {
-                                    obj.put("userName", s.getUser().getName());
-                                    assert s.getUser().getAvatar() != null;
-                                    obj.put("userId", s.getUser().getOpenid());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            arr.put(obj);
-                        }
-                        taptap.TapTapEmitSignal("leaderboard_scores", arr.toString());
+                        JSONArray arr = ScoreHandler(scores);
+                        taptap.TapTapEmitSignal("leaderboard_scores", Page, arr.toString());
                     }
 
                     @Override
@@ -118,4 +105,55 @@ public class GodotTapTapLeaderboard {
                 }
         );
     }
+
+    //获取相邻分数
+    public void PlayerCenteredScores(String loadId) {
+        TapTapLeaderboard.loadPlayerCenteredScores(
+                loadId, // 排行榜ID
+                LeaderboardCollection.PUBLIC, // 好友榜
+                null, // periodToken - 时间周期标识
+                3, // maxCount - 最大返回数量
+                new TapTapLeaderboardResponseCallback<>() {
+                    @Override
+                    public void onSuccess(LeaderboardScoresResponse data) {
+                        // 获取成功
+                        List<Score> scores = data.getScores();
+
+                        if (scores.isEmpty()) {
+                            return;
+                        }
+                        JSONArray arr = ScoreHandler(scores);
+                        taptap.TapTapEmitSignal("leaderboard_scores", Nearby, arr.toString());
+                    }
+
+                    @Override
+                    public void onFailure(int code, String message) {
+                        // 获取失败
+                        Log.e("Leaderboard", "获取排行榜数据失败: code=" + code + ", message=" + message);
+                    }
+                }
+        );
+    }
+
+
+    private JSONArray ScoreHandler(List<Score> scores) {
+        JSONArray arr = new JSONArray();
+        for (Score s : scores) {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("rank", s.getRank());
+                obj.put("score", s.getScore());
+                if (s.getUser() != null) {
+                    obj.put("userName", s.getUser().getName());
+                    assert s.getUser().getAvatar() != null;
+                    obj.put("userId", s.getUser().getOpenid());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            arr.put(obj);
+        }
+        return arr;
+    }
+
 }

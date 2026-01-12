@@ -65,9 +65,9 @@ public class TaptapPlugin extends GodotPlugin {
     @Override
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new HashSet<>();
-        signals.add(new SignalInfo("login_success", Boolean.class, String.class, String.class));
+        signals.add(new SignalInfo("login", Integer.class, Boolean.class, String.class));
         signals.add(new SignalInfo("taptap_compliance", Boolean.class));
-        signals.add(new SignalInfo("leaderboard_scores", String.class)); //排行榜分数
+        signals.add(new SignalInfo("leaderboard_scores", Integer.class, String.class)); //排行榜分数
         signals.add(new SignalInfo("cloud_save", Integer.class, Boolean.class, String.class));
         return signals;
     }
@@ -102,6 +102,11 @@ public class TaptapPlugin extends GodotPlugin {
     @UsedByGodot
     public void tapTapLogin() {
         godotTapTapLogin.TapTapLogin();
+    }
+
+    @UsedByGodot
+    public void tapTapGetAccount() {
+        godotTapTapLogin.GetCurrentTapAccount();
     }
 
 
@@ -140,6 +145,11 @@ public class TaptapPlugin extends GodotPlugin {
     public void GetLeaderboardScores(String id) {
 
         godotTapTapLeaderboard.GetLeaderboardScores(id);
+    }
+
+    @UsedByGodot
+    public void GetNearbyScores(String id) {
+        godotTapTapLeaderboard.PlayerCenteredScores(id);
     }
 
 

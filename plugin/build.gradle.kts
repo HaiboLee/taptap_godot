@@ -43,7 +43,7 @@ android {
 
 dependencies {
     implementation("org.godotengine:godot:4.4.1.stable")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1") //合规认证json 序列化
+    implementation ("com.google.code.gson:gson:2.13.2")
     implementation("com.taptap.sdk:tap-core" + taptapVersion)
     implementation("com.taptap.sdk:tap-login" + taptapVersion)
     implementation("com.taptap.sdk:tap-leaderboard-androidx" + taptapVersion) //排行榜
