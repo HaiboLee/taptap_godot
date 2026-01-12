@@ -42,7 +42,7 @@ public class GodotTapTapLogin {
                 info.kid = tapTapAccount.getAccessToken().getKid();
                 info.macKey = tapTapAccount.getAccessToken().getMacKey();
                 info.openId = tapTapAccount.getOpenId();
-                taptap.TapTapEmitSignal("login", Login, true, info.toJson());
+                taptap.TapTapEmitSignal("login", Login, true, info.toJson(), "");
             }
 
             @Override
@@ -60,15 +60,16 @@ public class GodotTapTapLogin {
     }
 
     //获取用户信息
-    public void GetCurrentTapAccount() {
+    public void GetCurrentTapAccount(String tag) {
         var account = TapTapLogin.getCurrentTapAccount();
         var info = new TapTapUserInfo();
+        assert account != null;
         info.name = account.getName();
         info.kid = account.getAccessToken().getKid();
         info.macKey = account.getAccessToken().getMacKey();
 
         info.openId = account.getOpenId();
-        taptap.TapTapEmitSignal("login", GetInfo, true, info.toJson());
+        taptap.TapTapEmitSignal("login", GetInfo, true, info.toJson(), tag);
 
     }
 

@@ -13,32 +13,14 @@ import com.taptap.sdk.compliance.option.TapTapComplianceOptions;
 import com.taptap.sdk.core.TapTapRegion;
 import com.taptap.sdk.core.TapTapSdk;
 import com.taptap.sdk.core.TapTapSdkOptions;
-import com.taptap.sdk.kit.internal.callback.TapTapCallback;
-import com.taptap.sdk.kit.internal.exception.TapTapException;
-import com.taptap.sdk.leaderboard.androidx.TapTapLeaderboard;
-import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardCallback;
-import com.taptap.sdk.leaderboard.callback.TapTapLeaderboardResponseCallback;
-import com.taptap.sdk.leaderboard.data.request.LeaderboardCollection;
-import com.taptap.sdk.leaderboard.data.request.SubmitScoresRequest;
-import com.taptap.sdk.leaderboard.data.response.LeaderboardScoresResponse;
-import com.taptap.sdk.leaderboard.data.response.SubmitScoresResponse;
-import com.taptap.sdk.leaderboard.data.response.common.Score;
-import com.taptap.sdk.login.Scopes;
-import com.taptap.sdk.login.TapTapAccount;
 import com.taptap.sdk.login.TapTapLogin;
 
 import org.godotengine.godot.Godot;
 import org.godotengine.godot.plugin.GodotPlugin;
 import org.godotengine.godot.plugin.SignalInfo;
 import org.godotengine.godot.plugin.UsedByGodot;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class TaptapPlugin extends GodotPlugin {
@@ -65,9 +47,9 @@ public class TaptapPlugin extends GodotPlugin {
     @Override
     public Set<SignalInfo> getPluginSignals() {
         Set<SignalInfo> signals = new HashSet<>();
-        signals.add(new SignalInfo("login", Integer.class, Boolean.class, String.class));
+        signals.add(new SignalInfo("login", Integer.class, Boolean.class, String.class, String.class));
         signals.add(new SignalInfo("taptap_compliance", Boolean.class));
-        signals.add(new SignalInfo("leaderboard_scores", Integer.class, String.class)); //排行榜分数
+        signals.add(new SignalInfo("leaderboard_scores", Integer.class, String.class, String.class)); //排行榜分数
         signals.add(new SignalInfo("cloud_save", Integer.class, Boolean.class, String.class));
         return signals;
     }
@@ -105,8 +87,8 @@ public class TaptapPlugin extends GodotPlugin {
     }
 
     @UsedByGodot
-    public void tapTapGetAccount() {
-        godotTapTapLogin.GetCurrentTapAccount();
+    public void tapTapGetAccount(String tag) {
+        godotTapTapLogin.GetCurrentTapAccount(tag);
     }
 
 

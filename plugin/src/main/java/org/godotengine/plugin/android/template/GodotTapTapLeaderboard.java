@@ -94,7 +94,7 @@ public class GodotTapTapLeaderboard {
                             return;
                         }
                         JSONArray arr = ScoreHandler(scores);
-                        taptap.TapTapEmitSignal("leaderboard_scores", Page, arr.toString());
+                        taptap.TapTapEmitSignal("leaderboard_scores", Page, arr.toString(), id);
                     }
 
                     @Override
@@ -123,7 +123,7 @@ public class GodotTapTapLeaderboard {
                             return;
                         }
                         JSONArray arr = ScoreHandler(scores);
-                        taptap.TapTapEmitSignal("leaderboard_scores", Nearby, arr.toString());
+                        taptap.TapTapEmitSignal("leaderboard_scores", Nearby, arr.toString(), loadId);
                     }
 
                     @Override
