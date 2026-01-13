@@ -110,7 +110,7 @@ public class GodotTapTapLeaderboard {
     public void PlayerCenteredScores(String loadId) {
         TapTapLeaderboard.loadPlayerCenteredScores(
                 loadId, // 排行榜ID
-                LeaderboardCollection.PUBLIC, // 好友榜
+                LeaderboardCollection.PUBLIC,
                 null, // periodToken - 时间周期标识
                 3, // maxCount - 最大返回数量
                 new TapTapLeaderboardResponseCallback<>() {
@@ -129,7 +129,7 @@ public class GodotTapTapLeaderboard {
                     @Override
                     public void onFailure(int code, String message) {
                         // 获取失败
-                        Log.e("Leaderboard", "获取排行榜数据失败: code=" + code + ", message=" + message);
+                        Log.e("taptap", "获取排行榜数据失败: code=" + code + ", message=" + message);
                     }
                 }
         );

@@ -33,6 +33,18 @@ public class GodotTapTapLogin {
             return;
         }
 
+        TapTapAccount tapTapAccount = TapTapLogin.getCurrentTapAccount();
+        if (tapTapAccount != null) {
+            //已登录 无需重复登录
+            var info = new TapTapUserInfo();
+            info.name = tapTapAccount.getName();
+            info.kid = tapTapAccount.getAccessToken().getKid();
+            info.macKey = tapTapAccount.getAccessToken().getMacKey();
+            info.openId = tapTapAccount.getOpenId();
+            taptap.TapTapEmitSignal("login", Login, true, info.toJson(), "");
+            return;
+        }
+
         TapTapLogin.loginWithScopes(activity, scopes, new TapTapCallback<TapTapAccount>() {
             @Override
             public void onSuccess(TapTapAccount tapTapAccount) {
